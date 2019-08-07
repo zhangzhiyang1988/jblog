@@ -3,12 +3,19 @@ package jblog.guohai.org.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * BLOG实体
  */
+@Entity
 public class BlogContent {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
+    Long id;
 
     /**
      * 编号
@@ -17,6 +24,10 @@ public class BlogContent {
     @Setter
     private int postCode;
 
+    @ManyToOne
+    @Getter
+    @Setter
+    UserModel user;
     /**
      * 中文标题
      */

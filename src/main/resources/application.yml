@@ -4,13 +4,13 @@ server:
     uri-encoding: UTF-8
 spring:
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      url: jdbc:mysql://blog.db:3306/jblog?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
-      username: blog
-      password: S5dHFMor9XSs1o7MvAfXRzH3SbeTBJzNNv4YMkX9xa1BTe8blLMwCrIOfnQLbWUH9ni62ilrOzPN/kqnF5Lm/w==
-      filters: config
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIBPhQVdNkfef9JUWlDYkL1DMhlfEzOiYEMyLO8gIY1gqOtL4+sUk06679uu7wT4WfDMRvVX5hA330/nr2e5vm8CAwEAAQ==
+    driver: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/jblog?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+  jpa:
+     show-sql: true
+     hibernate.ddl-auto: update
   freemarker:
     template-loader-path: classpath:/web/
     cache: false
@@ -21,9 +21,6 @@ spring:
     expose-request-attributes: true
     expose-session-attributes: true
     request-context-attribute: request
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
 my-data:
   #blog名称
   blog-name: 海眼看世界

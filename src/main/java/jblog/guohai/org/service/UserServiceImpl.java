@@ -1,6 +1,6 @@
 package jblog.guohai.org.service;
 
-import jblog.guohai.org.dao.UserDao;
+import jblog.guohai.org.Repository.UserRepository;
 import jblog.guohai.org.model.Result;
 import jblog.guohai.org.model.UserModel;
 import jblog.guohai.org.util.MD5;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    UserDao userDao;
+    UserRepository userRepository;
 
     /**
      * UUID缓存
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
         result.setState(false);
         result.setData("未知错误");
         //获取用户实体
-        UserModel userModel = userDao.getUserByName(user);
+        UserModel userModel = userRepository.findUserModelByUserName(user);
         if (null == userModel) {
             result.setData("请确认用户名密码正确");
             return result;

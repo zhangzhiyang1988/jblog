@@ -1,9 +1,11 @@
 package jblog.guohai.org.service;
 
-import jblog.guohai.org.dao.BlogDao;
+import jblog.guohai.org.Repository.BlogRepository;
 import jblog.guohai.org.model.BlogContent;
 import jblog.guohai.org.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
-    BlogDao blogDao;
+    BlogRepository blogRepository;
 
     /**
      * 后台用的页大小
@@ -28,7 +30,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<BlogContent> getBackstageList(Integer pageNumber) {
 
-        return blogDao.getBackstageList((pageNumber-1)*adminPageSize, adminPageSize);
+        //return blogDao.getBackstageList((pageNumber-1)*adminPageSize, adminPageSize);
+        Page<BlogContent> page =  blogRepository.findAll(new PageRequest(pageNumber,adminPageSize));
+        return page.getContent();
     }
 
     /**
@@ -39,14 +43,13 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public Result<String> delPostBlog(Integer postCode) {
-        if( blogDao.getContentById(postCode) == null ) {
+        if( blogRepository.findBlogContentByPostCode(postCode) == null ) {
             return new Result<>(false,"没有此编号文章");
         }
-        if( blogDao.delPostBlog(postCode) ) {
-            return new Result<>(true,"删除成功");
-        } else {
-            return new Result<>(false,"删除失败");
-        }
+        BlogContent blog = blogRepository.findBlogContentByPostCode(postCode);
+        blogRepository.delete(blog);
+        return new Result<>(true,"删除成功");
+
     }
 
     /**
@@ -57,7 +60,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Integer getBackstageMaxPageNum() {
 
-        int postCount = blogDao.getBackstagePostCount();
+        int postCount = blogRepository.findAll().size();
         return postCount % adminPageSize == 0 ? postCount / adminPageSize : postCount / adminPageSize + 1;
     }
 }

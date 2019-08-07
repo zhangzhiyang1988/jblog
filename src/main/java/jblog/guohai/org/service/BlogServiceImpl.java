@@ -1,19 +1,23 @@
 package jblog.guohai.org.service;
 
-import jblog.guohai.org.dao.BlogDao;
+import jblog.guohai.org.Repository.BlogRepository;
 import jblog.guohai.org.model.BlogContent;
 import jblog.guohai.org.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class BlogServiceImpl implements BlogService {
 
-    @Autowired
-    private BlogDao blogDao;
 
+    @Autowired
+    private BlogRepository blogRepository;
     /**
      * 前台用的页大小
      */
@@ -27,7 +31,8 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public BlogContent getByID(Integer code) {
-        return blogDao.getContentById(code);
+//        return blogDao.getContentById(code);
+        return blogRepository.findBlogContentByPostCode(code);
     }
 
     /**
@@ -39,7 +44,8 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public BlogContent getByYMDTitle(String sDate, String smallTitle) {
-        return blogDao.getContentByYMDTitle(sDate, smallTitle);
+//        return blogDao.getContentByYMDTitle(sDate, smallTitle);
+          return blogRepository.findBlogContentByPostSmallTitleAndPostDate(smallTitle,sDate);
     }
 
     /**
@@ -50,7 +56,8 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public BlogContent getNextBlog(Integer code) {
-        return blogDao.getNextBlog(code);
+//        return blogDao.getNextBlog(code);
+          return blogRepository.findBlogContentByPostCode(code);
     }
 
     /**
@@ -61,7 +68,8 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public BlogContent getLastBlog(Integer code) {
-        return blogDao.getLastBlog(code);
+//        return blogDao.getLastBlog(code);
+          return blogRepository.findBlogContentByPostCode(code);
     }
 
 
@@ -73,7 +81,9 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public List<BlogContent> getByPage(Integer pageNumber) {
-        return blogDao.getByPage((pageNumber - 1) * pageSize, pageSize);
+        //return blogDao.getByPage((pageNumber - 1) * pageSize, pageSize);
+        Page page = blogRepository.findAll(new PageRequest(pageNumber,pageSize));
+        return page.getContent();
     }
 
     /**
@@ -83,7 +93,8 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public Integer getMaxPageNum() {
-        int postCount = blogDao.getPostCount();
+//        int postCount = blogDao.getPostCount();
+          int postCount = blogRepository.findAllByPostStatus("publish").size();
         return postCount % pageSize == 0 ? postCount / pageSize : postCount / pageSize + 1;
     }
 
@@ -96,7 +107,8 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Result<String> addPostBlog(BlogContent blog) {
         Result<String> result = new Result<String>();
-        blogDao.addPostBlog(blog);
+        //blogDao.addPostBlog(blog);
+        blogRepository.save(blog);
         if (blog.getPostCode() > 0) {
             result.setState(true);
             result.setData("Success:" + blog.getPostCode());
